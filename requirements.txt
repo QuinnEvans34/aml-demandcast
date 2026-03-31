@@ -1,0 +1,10 @@
+mlflow
+streamlit
+jupyter
+ipykernel
+pyarrow
+pandas
+numpy
+scikit-learn
+mlflow
+optuna
