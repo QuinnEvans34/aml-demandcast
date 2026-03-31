@@ -1,7 +1,5 @@
 # DemandCast (Project 1)
 
-#test
-
 ## What Is This Project?
 
 DemandCast is an individual applied machine learning project focused on predicting hourly taxi demand by NYC pickup zone.
