@@ -1,0 +1,285 @@
+project:
+  name: DemandCast
+  objective: Predict hourly taxi demand by pickup zone.
+  forecasting_task: hourly_trip_count_by_pickup_zone
+  semantic_layer_version: 1
+
+dataset:
+  name: nyc_tlc_yellow_taxi
+  month: 2025-01
+  description: January 2025 NYC TLC Yellow Taxi trip records.
+
+sources:
+  parquet_path: data/yellow_tripdata_2025-01.parquet
+  reference_documents:
+    - docs/semantic_layer_brief.md
+    - docs/project-one-kickoff-outline.MD
+    - docs/01_initial_exploration_notebook_brief.md
+    - docs/data_dictionary_trip_records_yellow.pdf
+
+raw_grain:
+  description: One row represents one taxi trip record.
+
+modeling_grain:
+  description: One row represents one pickup zone in one hour.
+  keys:
+    - pickup_hour
+    - PULocationID
+
+target:
+  name: trip_count
+  kind: derived
+  description: Number of taxi pickups in a given pickup zone during a given hour.
+  formula: count(*) grouped by [pickup_hour, PULocationID]
+
+entities:
+  - name: trip
+    key: null
+    description: Raw taxi trip event.
+  - name: pickup_zone
+    key: PULocationID
+    description: TLC pickup taxi zone.
+  - name: dropoff_zone
+    key: DOLocationID
+    description: TLC dropoff taxi zone.
+  - name: vendor
+    key: VendorID
+    description: Taxi technology/provider identifier.
+
+time_dimensions:
+  raw:
+    - name: tpep_pickup_datetime
+      description: Datetime when the meter was engaged.
+    - name: tpep_dropoff_datetime
+      description: Datetime when the meter was disengaged.
+  derived:
+    - name: pickup_hour
+      formula: floor(tpep_pickup_datetime to hour)
+    - name: pickup_date
+      formula: date(tpep_pickup_datetime)
+    - name: pickup_day_of_week
+      formula: dayofweek(tpep_pickup_datetime)
+    - name: pickup_hour_of_day
+      formula: hour(tpep_pickup_datetime)
+    - name: is_weekend
+      formula: pickup_day_of_week in [5, 6]
+
+raw_fields:
+  - name: VendorID
+    dtype: int32
+    role: dimension
+    description: Vendor identifier.
+  - name: tpep_pickup_datetime
+    dtype: datetime64[us]
+    role: time
+    description: Meter engaged timestamp (trip start).
+  - name: tpep_dropoff_datetime
+    dtype: datetime64[us]
+    role: time
+    description: Meter disengaged timestamp (trip end).
+  - name: passenger_count
+    dtype: float64
+    role: dimension
+    description: Reported passenger count.
+  - name: trip_distance
+    dtype: float64
+    role: measure
+    description: Meter-reported trip distance in miles.
+  - name: RatecodeID
+    dtype: float64
+    role: dimension
+    description: Final trip rate code at trip end (includes 99 for null/unknown).
+  - name: store_and_fwd_flag
+    dtype: object
+    role: dimension
+    description: Y/N flag for buffered in-vehicle transmission.
+  - name: PULocationID
+    dtype: int32
+    role: dimension
+    description: Pickup TLC taxi zone ID.
+  - name: DOLocationID
+    dtype: int32
+    role: dimension
+    description: Dropoff TLC taxi zone ID.
+  - name: payment_type
+    dtype: int64
+    role: dimension
+    description: Coded payment method (includes 0=Flex Fare, 1=Card, 2=Cash).
+  - name: fare_amount
+    dtype: float64
+    role: measure
+    description: Time-and-distance fare from meter.
+  - name: extra
+    dtype: float64
+    role: measure
+    description: Miscellaneous extras/surcharges.
+  - name: mta_tax
+    dtype: float64
+    role: measure
+    description: MTA tax amount.
+  - name: tip_amount
+    dtype: float64
+    role: measure
+    description: Tip amount (credit card tips only).
+  - name: tolls_amount
+    dtype: float64
+    role: measure
+    description: Tolls paid during trip.
+  - name: improvement_surcharge
+    dtype: float64
+    role: measure
+    description: Improvement surcharge amount.
+  - name: total_amount
+    dtype: float64
+    role: measure
+    description: Total charged amount excluding cash tips.
+  - name: congestion_surcharge
+    dtype: float64
+    role: measure
+    description: Congestion surcharge amount.
+  - name: Airport_fee
+    dtype: float64
+    role: measure
+    description: Pickup-only fee at LGA and JFK airports.
+  - name: cbd_congestion_fee
+    dtype: float64
+    role: measure
+    description: CBD congestion pricing fee (January 2025 period).
+
+measures:
+  forecasting_core:
+    - name: trip_count
+      kind: derived
+      description: Count of trips per pickup_hour and PULocationID.
+  qa_context:
+    - name: trip_distance
+      source: trip_distance
+      kind: raw
+      description: Useful for QA/context; weaker direct signal for future demand.
+    - name: trip_duration_min
+      source: derived
+      kind: derived
+      description: Useful for QA/context; derived from pickup/dropoff timestamps.
+    - name: fare_amount
+      source: fare_amount
+      kind: raw
+      description: Post-outcome trip amount, mainly QA/context for demand project.
+    - name: tip_amount
+      source: tip_amount
+      kind: raw
+      description: Post-outcome payment behavior, mainly QA/context.
+    - name: total_amount
+      source: total_amount
+      kind: raw
+      description: Post-outcome total charge, mainly QA/context.
+
+derived_features:
+  - name: trip_duration_min
+    formula: (tpep_dropoff_datetime - tpep_pickup_datetime) in minutes
+    derived_from:
+      - tpep_pickup_datetime
+      - tpep_dropoff_datetime
+  - name: pickup_hour
+    formula: floor(tpep_pickup_datetime to hour)
+    derived_from:
+      - tpep_pickup_datetime
+  - name: pickup_date
+    formula: date(tpep_pickup_datetime)
+    derived_from:
+      - tpep_pickup_datetime
+  - name: pickup_day_of_week
+    formula: dayofweek(tpep_pickup_datetime)
+    derived_from:
+      - tpep_pickup_datetime
+  - name: pickup_hour_of_day
+    formula: hour(tpep_pickup_datetime)
+    derived_from:
+      - tpep_pickup_datetime
+  - name: is_weekend
+    formula: pickup_day_of_week in [5, 6]
+    derived_from:
+      - pickup_day_of_week
+  - name: trip_count
+    formula: count(*) grouped by [pickup_hour, PULocationID]
+    derived_from:
+      - pickup_hour
+      - PULocationID
+
+predictive_feature_groups:
+  strong_candidate_predictors:
+    - PULocationID
+    - pickup_hour
+    - pickup_day_of_week
+    - pickup_hour_of_day
+    - is_weekend
+    - lagged_trip_count_by_zone_hour
+  contextual_secondary_predictors:
+    - VendorID
+    - RatecodeID
+    - passenger_count
+    - store_and_fwd_flag
+  likely_leakage_or_post_outcome:
+    - tpep_dropoff_datetime
+    - DOLocationID
+    - trip_distance
+    - fare_amount
+    - tip_amount
+    - total_amount
+    - payment_type
+    - tolls_amount
+    - congestion_surcharge
+    - Airport_fee
+    - cbd_congestion_fee
+
+leakage_or_post_outcome_fields:
+  - name: tpep_dropoff_datetime
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: DOLocationID
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+      - weak_direct_signal_for_future_demand
+  - name: fare_amount
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: tip_amount
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: total_amount
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: payment_type
+    reason_tags:
+      - known_after_trip_completion
+      - weak_direct_signal_for_future_demand
+  - name: trip_distance
+    reason_tags:
+      - post_outcome
+      - weak_direct_signal_for_future_demand
+  - name: tolls_amount
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: congestion_surcharge
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: Airport_fee
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+  - name: cbd_congestion_fee
+    reason_tags:
+      - post_outcome
+      - known_after_trip_completion
+
+notes:
+  - This semantic layer is for project-level consistency, not enterprise warehouse governance.
+  - Raw trip-level data should be aggregated to zone-hour grain for the forecasting task.
+  - Post-outcome trip fields may still be useful for QA and anomaly checks.
+  - Lagged demand features are expected to be engineered from historical zone-hour aggregates.
