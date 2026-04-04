@@ -7,8 +7,21 @@ __pycache__/
 # Virtual environment
 .venv/
 
-# Project data and model artifacts
-data/
-models/
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# ML experiment artifacts
 mlruns/
-*.parquet
+
+# Data files
+data/*
+!data/.gitkeep
+
+# Model artifacts
+models/*
+!models/.gitkeep
+
+# I had some extra files that I wanted to git ignore for the submission
+docs/
+resources/
+semantic/
