@@ -25,3 +25,7 @@ models/*
 docs/
 resources/
 semantic/
+
+notebooks/column_analysis.ipynb
+
+test.ipynb
