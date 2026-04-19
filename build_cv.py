@@ -82,4 +82,6 @@ print(f"\nCV MAE: {mean_mae:.2f} ± {std_mae:.2f}")
 # Be contributing to the accuracy. I feel confident about the random forest that I trained,
 # and after the CV I feel even more confident. The distrubution of the MAE between folds
 # shows that the model is stable for the most part. And that anything beyond this should
-# perform in a similar way.
+# perform in a similar way. We can also see that it performs stronger with each training,
+# As it gets more data to train on, the better it does. Which is also a sign of our model
+# learning the patterns in the data, not just overfitting.
