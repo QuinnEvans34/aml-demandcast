@@ -12,6 +12,13 @@ __pycache__/
 
 # ML experiment artifacts
 mlruns/
+mlartifacts/
+mlflow.db
+mlartifacts_verify/
+mlflow_verify.db
+
+# Skeleton files (reference only, not for submission)
+src/cv_skeleton.py
 
 # Data files
 data/*
