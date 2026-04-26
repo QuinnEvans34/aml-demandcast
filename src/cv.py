@@ -11,9 +11,10 @@ Usage (from project root with .venv active)
 
 Before running
 --------------
-1. MLflow UI must be running:
-       mlflow ui
-   Then open http://localhost:5000 in your browser.
+1. MLflow UI must be running on port 8080 (port 5000 conflicts with
+   macOS AirPlay Receiver):
+       mlflow ui --port 8080
+   Then open http://localhost:8080 in your browser.
 2. features.parquet must exist in data/.
 3. You should already have ≥1 MLflow run from train.py — CV results will be
    logged alongside those runs so you can compare them in the UI.

@@ -8,7 +8,7 @@ Usage (from project root with .venv active):
     python build_train.py
 
 Prerequisites:
-    1. MLflow UI running:    mlflow ui
+    1. MLflow UI running:    mlflow ui --port 8080   (port 5000 = macOS AirPlay)
     2. Features built:       python build_features.py
 """
 

@@ -11,9 +11,10 @@ Usage (from project root with .venv active)
 
 Before running
 --------------
-1. MLflow UI must be running:
-       mlflow ui
-   Then open http://localhost:5000 in your browser.
+1. MLflow UI must be running on port 8080 (port 5000 conflicts with
+   macOS AirPlay Receiver):
+       mlflow ui --port 8080
+   Then open http://localhost:8080 in your browser.
 2. features.parquet must exist in data/:
        pipelines/build_features.py produces this file.
 
@@ -173,7 +174,7 @@ def train_and_log(
         If data/features.parquet does not exist. Run build_features.py first.
     mlflow.exceptions.MlflowException
         If the MLflow server is not reachable at MLFLOW_TRACKING_URI.
-        Fix: start the server with `mlflow ui` from your project root.
+        Fix: start the server with `mlflow ui --port 8080` from your project root.
 
     Examples
     --------

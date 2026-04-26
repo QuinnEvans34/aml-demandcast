@@ -29,6 +29,8 @@ FEATURE_COLS: list[str] = [
     'demand_rolling_168h',
 ]
 
+TARGET: str = 'demand'
+
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """Clean raw trip-level rows before feature engineering.
