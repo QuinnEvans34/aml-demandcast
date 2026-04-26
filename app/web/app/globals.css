@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background: white;
+  color: rgb(15 23 42); /* slate-900 */
+}
+
+/* Leaflet container fills its parent in our layouts. */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+/* Map polygons are clickable — make it visible. */
+.zone-polygon {
+  cursor: pointer;
+}
