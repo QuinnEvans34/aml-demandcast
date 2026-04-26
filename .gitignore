@@ -12,6 +12,13 @@ __pycache__/
 
 # ML experiment artifacts
 mlruns/
+mlartifacts/
+mlflow.db
+mlartifacts_verify/
+mlflow_verify.db
+
+# Skeleton files (reference only, not for submission)
+src/cv_skeleton.py
 
 # Data files
 data/*
@@ -22,10 +29,14 @@ models/*
 !models/.gitkeep
 
 # I had some extra files that I wanted to git ignore for the submission
-docs/
+docs/*
+!docs/presentation_outline.md
 resources/
 semantic/
 
 notebooks/column_analysis.ipynb
 
 test.ipynb
+
+# Claude Code harness state
+.claude/
