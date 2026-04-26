@@ -38,13 +38,13 @@ This is a preparation tool, not slides. Each numbered section is one talking-poi
 
 ## 4. Demo (planned for the live presentation)
 
-Five concrete things to show in the Streamlit dashboard at `streamlit run app/dashboard.py`:
+Five concrete things to show in the Next.js + FastAPI dashboard. Start it with `uvicorn app.api.main:app --port 8000` (backend) and `npm run dev` from `app/web/` (frontend), then open <http://localhost:3000>:
 
-1. **Set sidebar inputs** to a known busy hour: `PULocationID=161` (Midtown Center), `hour_of_day=17`, `day_of_week=4` (Friday), `is_weekend=No`. Read the predicted demand from the `st.metric()` card.
-2. **Switch to a known quiet hour** for the same zone: `hour_of_day=4` (4 AM), `day_of_week=6` (Sunday). Show the prediction drops sharply — the model has learned the time-of-day rhythm.
-3. **Toggle the weekend flag** for the busy-hour case (Midtown Center 5 PM, weekend = Yes). Show how the prediction changes when the only thing that moves is the calendar context.
-4. **Hover over each metric tooltip** so the audience sees the plain-language interpretation behind MAE, RMSE, R², MAPE, and MBE — the same five sentences from `notebooks/04_evaluation.md`.
-5. **Show the bar chart of average hourly demand by hour-of-day.** This is the daily rhythm the model is learning from — a 6 AM build-up, a midday plateau, the 5–7 PM peak, and the late-night fall-off. The chart contextualizes why the model's predictions move the way they do.
+1. **Set sidebar inputs** to a known busy hour: zone `Midtown Center`, hour slider at `5 PM`, day pill `Fri`, weekday selected. The hero card shows ~496 predicted pickups with the `± 4` validation MAE band next to it. The "vs typical" stat below shows it tracking the historical mean for that slot.
+2. **Switch the hour slider to 4 AM and the day pill to Sun** for the same zone. The hero number drops sharply — the model has learned the time-of-day and weekday-vs-weekend rhythm. The "vs typical" stat flips direction and color.
+3. **Open the Map tab** and show NYC zones color-graded white → blue by predicted demand for the current selection. Click any other zone on the map to switch the selection live; the hero, stat strip, and timeline all update together. The map is the strongest visual hook for a non-technical audience.
+4. **Open the Heatmap tab** to show the 24×7 "operational fingerprint" for the selected zone — every hour-of-day × day-of-week cell colored by predicted demand. Switch to an outer-borough zone to contrast a dense Manhattan pattern with a sparse one. Makes the 46% zero-demand finding from EDA visible at a glance.
+5. **Hover the model card metrics at the bottom** to surface the plain-language tooltips for MAE / RMSE / R² / MAPE / MBE — the same five sentences from `notebooks/04_evaluation.md`. Optionally jump to `/compare` to pin two zones side-by-side, which makes the "where should I send drivers next" question concrete with two live predictions.
 
 ---
 
