@@ -1,4 +1,5 @@
 # DemandCast — Project 1 Presentation Outline
+# Better notes will be provided during the presentation. 
 
 This is a preparation tool, not slides. Each numbered section is one talking-point block for the live presentation.
 
@@ -50,10 +51,8 @@ Five concrete things to show in the Next.js + FastAPI dashboard. Start it with `
 
 ## 5. Reflection
 
-- **One thing that surprised me:** [CHOOSE ONE / EDIT]
-  - "I expected a random train/val split to leak data dramatically. I tested it directly: random-split CV mean MAE was only 0.56 lower than temporal CV mean (3.77 vs 4.33). The bigger lesson was in the std — random CV had 0.05 std vs temporal CV's 0.66. Random isn't more reliable; it's just hiding the real week-to-week variance, not eliminating it."
-  - "The tuning gain (0.025 MAE) was inside the CV's natural noise floor (0.66 std). I expected tuning to be a clear win and it wasn't — confirming that the binding constraint on this model is feature richness, not hyperparameter precision."
+- **One thing that surprised me:** 
+I was really suprised with how good my dashboard turned out. I ended up using next.js instead of streamlit, which was something I asked if I could do on thursday, and I was really happy with the results. I have gotten really used to making streamlit apps, so it was cool to sort of push myself and try to make a quality final product. I was suprised with how it turned out, and how easy it ended up being. With the help of claude and codex I was able to finish it up in a couple hours. I have worked with .next before, so I was familiar with it, but I was really happy with the final outcome.
 
-- **One thing I would do differently:** [CHOOSE ONE / EDIT]
-  - "Add a weather signal early in the project. Demand swings hard with rain and cold; the lag features partly proxy for this but a clean weather-by-zone-hour join would probably move val MAE more than tuning did, with much less compute."
-  - "Report mean ± std from the start, not single-shot validation MAE. The CV std (0.66) is the most important number for this dataset — it tells the operator the natural error bar around any headline metric — and I didn't surface it consistently until late."
+- **One thing I would do differently:** 
+If I were to do one thing differently, I think that I would have really thoroughly worked on the ML and anything else in part 1 and 2 before moving on. I did everything that was required, but then jumped directly into the dashboard, because of this I had to spend some extra time and commits on github. I had different work on two branches, which ended up being fine because I just merged the work to main. But I also had files that were being changed inside my stashed files, so when I got into the final main, I had to do some work in git to make sure I was not committing files that were not necessary, and that I did not loose anything that was in my stashed changes.
