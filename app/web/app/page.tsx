@@ -57,7 +57,7 @@ export default function Home() {
           <Activity className="h-5 w-5 text-accent" />
           <span className="font-semibold tracking-tight">DemandCast</span>
           <span className="text-xs text-slate-500 ml-2">
-            Production model · DemandCast v2
+            Production model · DemandCast v4
           </span>
         </div>
         <a href="/compare" className="text-sm text-slate-700 hover:text-accent">

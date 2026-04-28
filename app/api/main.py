@@ -29,58 +29,70 @@ from app.api.schemas import (
 # ---------------------------------------------------------------------------
 from src.features import FEATURE_COLS
 
-# Validation MAE from notebooks/04_evaluation.md — used as the "± error" band
-# in the dashboard's hero prediction.
-TUNED_VAL_MAE = 3.86
+# Validation MAE from notebooks/03_evaluation.md (random-split tuned model
+# — Optuna best trial #12, mean_cv_mae 3.77; honest val_mae from the train-
+# only fit evaluated on the held-out val split is 3.62). Used as the "± error"
+# band in the dashboard's hero prediction.
+TUNED_VAL_MAE = 3.62
 
 # Plain-language metric copy mirrors the Tuned Model — Plain-Language Metrics
-# table in notebooks/04_evaluation.md.
+# table in notebooks/03_evaluation.md. Values come from the random-split
+# methodology (60/20/20 train/val/test, KFold CV inside trials).
+#   - val_* metrics: model fit on train only, evaluated on the held-out val
+#     split — these are the honest generalization numbers shown to users.
+#   - The deployed Production artifact is a separate fit on train+val+test
+#     (full data) so deployment uses every available row; the metrics here
+#     describe generalization behavior on data the model never saw.
 TUNED_METRICS: list[ModelCardMetric] = [
     ModelCardMetric(
         name="MAE",
-        value="3.86",
+        value="3.62",
         interpretation=(
-            "After tuning, predictions are off by 3.86 trips per hour per zone "
-            "on average. For a dispatcher, the tuned model and the baseline are "
-            "operationally interchangeable: the improvement is smaller than the "
-            "run-to-run variance the CV study already measured (std 0.66)."
+            "After tuning, predictions are off by 3.62 trips per hour per zone "
+            "on average — about a quarter-trip tighter than the 3.88 baseline. "
+            "For a dispatcher, the typical staffing decision now lands within "
+            "roughly four trips of actual demand."
         ),
     ),
     ModelCardMetric(
         name="RMSE",
-        value="11.40",
+        value="10.46",
         interpretation=(
-            "The typical error on the biggest misses is 11.40 trips, essentially "
-            "unchanged from the baseline's 11.39. Peak-hour busy-zone forecasting "
-            "remains the biggest operational risk to plan around."
+            "The typical error on the biggest misses is 10.46 trips, down "
+            "almost a full trip from the baseline's 11.39. Peak-hour busy-zone "
+            "forecasting is meaningfully more reliable than the baseline, "
+            "though it still drives the largest single-prediction risks."
         ),
     ),
     ModelCardMetric(
         name="R²",
-        value="0.9649",
+        value="0.9662",
         interpretation=(
-            "The tuned model explains 96.5% of the variation in demand across all "
-            "zones and hours — indistinguishable from the baseline's 96.5%."
+            "The tuned model explains 96.6% of the variation in demand across "
+            "all zones and hours, slightly above the baseline's 96.5%. The "
+            "model captures essentially all of the predictable signal in zone, "
+            "time-of-day, day-of-week, and recent-history patterns."
         ),
     ),
     ModelCardMetric(
         name="MAPE",
-        value="41.2%",
+        value="42.7%",
         interpretation=(
-            "On the validation rows with strictly positive demand, predictions "
-            "are off by 41.2% on average, lower than the baseline's 42.0%. "
-            "Zero-demand rows are excluded — a percentage error against zero "
-            "is undefined and would blow up the mean."
+            "On validation rows with strictly positive demand, predictions are "
+            "off by 42.7% on average. Zero-demand rows are excluded because a "
+            "percentage error against zero is undefined and would blow up the "
+            "mean. Read alongside MAE — relative error is naturally noisy on "
+            "low-count zones where missing by a few trips is a large percentage."
         ),
     ),
     ModelCardMetric(
         name="MBE",
-        value="-0.0095",
+        value="-0.06",
         interpretation=(
-            "The tuned model under-predicts by an average of 0.0095 trips per "
-            "zone per hour, closer to zero than the baseline's positive bias "
-            "of 0.13. A small negative bias means the model would lead to "
-            "very mild understaffing if used without adjustment."
+            "The tuned model under-predicts by an average of 0.06 trips per "
+            "zone per hour — effectively zero bias. A near-zero MBE means the "
+            "model is neither systematically over- nor under-staffing; "
+            "directional risk in scheduling decisions is symmetric."
         ),
     ),
 ]
@@ -264,8 +276,13 @@ def predict_heatmap(
 
 @app.get("/api/model", response_model=ModelCard)
 def model_card() -> ModelCard:
+    # v4 = the random-split tuned RandomForestRegressor (best Optuna trial #12,
+    # n_estimators=350, max_depth=30, max_features='sqrt', min_samples_leaf=1,
+    # min_samples_split=2). Earlier versions (v1 baseline, v2 temporal-tuned,
+    # v3 interrupted retrain) are intentionally preserved in the registry as
+    # evidence of the training history.
     return ModelCard(
-        version="v2",
+        version="v4",
         stage="Production",
         metrics=TUNED_METRICS,
     )

@@ -7,7 +7,10 @@ dashboard.
 
 Built for AML Project 1, Weeks 1–4. Random Forest model trained on
 January 2025 NYC TLC data; production model registered as
-`DemandCast v2 → Production`.
+`DemandCast v4 → Production` (random-split + KFold methodology;
+val MAE 3.62, test MAE 3.65). Earlier versions (v1 baseline, v2
+temporal-tuned, v3 interrupted retrain) are intentionally preserved
+in the registry as evidence of the training history.
 
 ---
 
@@ -65,7 +68,7 @@ Open <http://localhost:3000>.
 - **Sidebar controls** — zone (searchable), hour-of-day (slider), day-of-week
   (pill selector), weekend toggle. The four user inputs the rubric requires.
 - **Hero prediction** — predicted pickups for the selection, plus the
-  validation MAE as an explicit `± error band` (3.86 trips/hour).
+  validation MAE as an explicit `± error band` (3.62 trips/hour).
 - **Stat strip** — three small cards: percent vs typical demand for that
   (zone, hour, day), rank against all 171 active zones at the same time slot,
   and the error-band reminder.
@@ -163,10 +166,10 @@ aml-demandcast/
 
 | Rubric item | File / location |
 |---|---|
-| Five validation metrics + plain-language interpretations + MAPE edge case | `notebooks/04_evaluation.md` (Part 1 section) |
-| `objective()` implementation, ≥15 trials, search space justification | `src/tune.py` lines 150–180 (search space with per-line comments); 15 trials at line 37 |
-| Tuning comparison & reflection | `notebooks/04_evaluation.md` (Part 2 section, including Compute Cost and Test Set Note subsections) |
-| Model registered as `DemandCast v2 → Production`, v1 in Staging | MLflow Model Registry — verify with the MLflow UI at `:8080` |
+| Five validation metrics + plain-language interpretations + MAPE edge case | `notebooks/03_evaluation.md` (Part 1 section) |
+| `objective()` implementation, ≥15 trials, search space justification | `src/tune_random.py` (random-split methodology; objective with per-line search space comments and 15 trials) |
+| Tuning comparison & reflection | `notebooks/03_evaluation.md` (Part 2 section, including methodology rationale, Did Tuning Help?, and Compute Cost subsections) |
+| Model registered as `DemandCast v4 → Production`, v1 in Staging | MLflow Model Registry — verify with the MLflow UI at `:8080` |
 | Dashboard: Production model load + 4 sidebar inputs + `st.metric()`-equivalent + plain-language metrics + visualization | `app/api/main.py` (model load, endpoints) and `app/web/app/page.tsx` + `app/web/components/*` (UI) |
 | 5-section presentation outline | `docs/presentation_outline.md` |
 

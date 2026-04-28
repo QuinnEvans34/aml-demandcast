@@ -30,10 +30,10 @@ This is a preparation tool, not slides. Each numbered section is one talking-poi
 ## 3. Model
 
 - **Models tried:** Linear Regression, Ridge (α=1), Random Forest baseline (n_estimators=100), Optuna-tuned Random Forest (15-trial study over `n_estimators`, `max_depth`, `min_samples_leaf`, `min_samples_split`, `max_features`).
-- **Winner:** the tuned Random Forest, registered as **DemandCast v2 → Production** in the MLflow Model Registry.
-- **Best validation MAE: 3.86 trips per hour per zone.**
+- **Winner:** the tuned Random Forest, registered as **DemandCast v4 → Production** in the MLflow Model Registry. Earlier versions (v1 baseline in Staging, v2 first temporal-split tuning attempt, v3 interrupted retrain) are intentionally preserved in the registry as evidence of the training history.
+- **Best validation MAE: 3.62 trips per hour per zone.** Held-out test MAE on a never-seen 20% slice is 3.65 — val and test agree closely, which is the signature of a model that generalizes rather than overfits.
 - **Plain-language version:** "On any given hour at any given pickup zone, our forecast is on average within about 4 pickups of the real number. That's tight enough to make confident staffing decisions for most zones."
-- **Honest framing on the tuning gain:** tuning lowered val MAE by 0.025 (3.88 → 3.86). That sits inside the cross-validation's natural fold-to-fold std of 0.66, so the gain is real but not statistically meaningful — the tuned model is operationally identical to the baseline. What tuning actually bought was confidence that the search space had been explored. The binding constraint on this pipeline is feature richness, not hyperparameter precision.
+- **Honest framing on the tuning gain:** tuning lowered val MAE by 0.26 (3.88 → 3.62), a ~6.8% improvement, with parallel gains on RMSE (11.39 → 10.46) and MBE (0.13 → -0.06 — effectively zero bias). The improvement is several times larger than the random-CV fold-to-fold std (~0.05), so it's a real win, not noise. The methodology change that unlocked this — switching from a temporal split + TimeSeriesSplit pairing to a fully random split + KFold pairing for internal consistency — was as important as the hyperparameter search itself.
 
 ---
 

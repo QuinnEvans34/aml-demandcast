@@ -22,7 +22,7 @@ export function HeroPrediction({ prediction }: { prediction: PredictResponse | n
           <div className="text-sm text-slate-500 uppercase tracking-wider">Predicted pickups</div>
           <div className="text-base text-slate-700 mt-1 tabular-nums flex items-center gap-2">
             ± {prediction.error_band.toFixed(0)}
-            <span title="Typical model error (validation MAE 3.86 trips/hour). The actual demand will be within this band most of the time.">
+            <span title="Typical model error (validation MAE 3.62 trips/hour). The actual demand will be within this band most of the time.">
               <Info className="h-3.5 w-3.5 text-slate-400" />
             </span>
           </div>
